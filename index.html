@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة جنى التعليمية - Jana Educational Platform</title>
+    
+    <!-- تجهيز الموقع ليعمل كتطبيق موبايل حقيقي -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22%D9%85%D9%86%D8%B5%D8%A9%20%D8%AC%D9%86%D9%89%22,%22short_name%22:%22Jana%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%236c5ce7%22,%22theme_color%22:%22%236c5ce7%22}">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74b9ff, #a29bfe);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* زرار تثبيت التطبيق على الموبايل */
+        #pwaInstallBtn {
+            display: none;
+            background-color: #ff7675;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* اللوجو العربي والانجليزي المدمج */
+        .brand-box {
+            background: #f1f2f6;
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px dashed #6c5ce7;
+            margin-bottom: 25px;
+        }
+        .logo-ar {
+            font-size: 28px;
+            font-weight: bold;
+            color: #6c5ce7;
+            display: block;
+        }
+        .logo-en {
+            font-size: 16px;
+            font-weight: bold;
+            color: #b2bec3;
+            display: block;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        h2 { color: #2d3436; margin-bottom: 20px; font-size: 22px; }
+        .form-group { text-align: right; margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input { width: 100%; padding: 12px; border: 2px solid #dfe6e9; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        
+        .btn {
+            background-color: #6c5ce7; color: white; border: none; padding: 12px 25px;
+            font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer;
+            width: 100%; margin-top: 15px; transition: 0.3s;
+        }
+        .btn:hover { background-color: #5145cd; }
+        .btn-choice { background-color: #00cec9; margin-bottom: 10px; }
+        .btn-choice:hover { background-color: #00b894; }
+        .btn-back { background-color: #b2bec3; margin-top: 15px; }
+
+        .grid-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        
+        .subject-card, .lesson-card {
+            background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 10px;
+            cursor: pointer; font-weight: bold; font-size: 18px; border-right: 5px solid #6c5ce7;
+            text-align: right; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .subject-card:hover, .lesson-card:hover { background: #dfe6e9; }
+
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; margin-top: 15px; border-radius: 10px; overflow: hidden; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        .step { display: none; }
+        .active { display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- زرار تحميل التطبيق الذكي للموبايل -->
+        <button id="pwaInstallBtn" onclick="installApp()">📲 اضغط هنا لتثبيت المنصة كتطبيق على تليفونك</button>
+
+        <!-- لوجو المنصة الثابت المزدوج (عربي وإنجليزي) -->
+        <div class="brand-box">
+            <span class="logo-ar">✨ منصة جنى التعليمية ✨</span>
+            <span class="logo-en">JANA EDUCATIONAL PLATFORM</span>
+        </div>
+
+        <!-- الخطوة 1: تسجيل الدخول -->
+        <div id="step1" class="step active">
+            <h2>تسجيل دخول الطالب</h2>
+            <form onsubmit="goToStep2(event)">
+                <div class="form-group">
+                    <label>اسم الطالب ثلاثي:</label>
+                    <input type="text" id="studentName" required placeholder="اكتب اسمك هنا">
+                </div>
+                <div class="form-group">
+                    <label>رقم هاتف ولي الأمر:</label>
+                    <input type="tel" required placeholder="01xxxxxxxxx">
+                </div>
+                <button type="submit" class="btn">دخول للمنصة</button>
+            </form>
+        </div>
+
+        <!-- الخطوة 2: نوع التعليم -->
+        <div id="step2" class="step">
+            <h2>مرحباً يا <span id="welcomeName"></span> 👋</h2>
+            <p>اختر نوع التعليم الخاص بك:</p>
+            <button class="btn btn-choice" onclick="goToStep3('تجريبي')">تعليم تجريبي</button>
+            <button class="btn btn-choice" onclick="goToStep3('عام')">تعليم عام</button>
+        </div>
+
+        <!-- الخطوة 3: السنة الدراسية -->
+        <div id="step3" class="step">
+            <h2>اختر سنتك الدراسية</h2>
+            <div class="grid-buttons">
+                <button class="btn" onclick="goToSubjects('الصف الأول')">الصف الأول</button>
+                <button class="btn" onclick="goToSubjects('الصف الثاني')">الصف الثاني</button>
+                <button class="btn" onclick="goToSubjects('الصف الثالث')">الصف الثالث</button>
+                <button class="btn" onclick="goToSubjects('الصف الرابع')">الصف الرابع</button>
+                <button class="btn" onclick="goToSubjects('الصف الخامس')">الصف الخامس</button>
+                <button class="btn" onclick="goToSubjects('الصف السادس')">الصف السادس</button>
+            </div>
+        </div>
+
+        <!-- الخطوة 4: عرض المواد -->
+        <div id="step4" class="step">
+            <h2>المواد الدراسية لـ <span id="currentGradeLabel"></span></h2>
+            <div id="subjectsList"></div>
+            <button class="btn btn-back" onclick="backToStep(3)">رجوع للخلف</button>
+        </div>
+
+        <!-- الخطوة 5: عرض الدروس -->
+        <div id="step5" class="step">
+            <h2>دروس مادة <span id="currentSubjectLabel"></span></h2>
+            <div id="lessonsList"></div>
+            <button class="btn btn-back" onclick="backToStep(4)">رجوع للمواد</button>
+        </div>
+
+        <!-- الخطوة 6: مشاهدة الحصة -->
+        <div id="step6" class="step">
+            <h2>مشاهدة الحصة: <span id="currentLessonLabel"></span></h2>
+            <div class="video-container">
+                <iframe id="lessonVideo" src="" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <button class="btn btn-back" onclick="backToStep(5)">رجوع للدروس</button>
+        </div>
+    </div>
+
+    <script>
+        // برمجيات تشغيل المنصة والتنقل
+        const data = {
+            "المواد": ["اللغة العربية", "الرياضيات", "العلوم", "اللغة الإنجليزية"],
+            "الدروس": {
+                "اللغة العربية": [
+                    { title: "الدرس الأول: نص الاستماع", video: "https://youtube.com" },
+                    { title: "الدرس الثاني: النحو المبسط", video: "https://youtube.com" }
+                ],
+                "الرياضيات": [{ title: "الدرس الأول: الأعداد الكبيرة", video: "https://youtube.com" }],
+                "العلوم": [{ title: "الدرس الأول: أدوات القياس", video: "https://youtube.com" }],
+                "اللغة الإنجليزية": [{ title: "Lesson 1: Welcome", video: "https://youtube.com" }]
+            }
+        };
+
+        function goToStep2(event) {
+            event.preventDefault();
+            document.getElementById('welcomeName').innerText = document.getElementById('studentName').value;
+            switchStep('step1', 'step2');
+        }
+        function goToStep3(type) { switchStep('step2', 'step3'); }
+        function goToSubjects(grade) {
+            document.getElementById('currentGradeLabel').innerText = grade;
+            let listDiv = document.getElementById('subjectsList');
+            listDiv.innerHTML = "";
+            data["المواد"].forEach(subject => {
+                listDiv.innerHTML += `<div class="subject-card" onclick="goToLessons('${subject}')">📚 ${subject}</div>`;
+            });
+            switchStep('step3', 'step4');
+        }
+        function goToLessons(subject) {
+            document.getElementById('currentSubjectLabel').innerText = subject;
+            let listDiv = document.getElementById('lessonsList');
+            listDiv.innerHTML = "";
+            let lessons = data["الدروس"][subject] || [];
+            if(lessons.length === 0) { listDiv.innerHTML = "<p>سيتم إضافة الحصص قريباً! ⏳</p>"; }
+            else {
+                lessons.forEach(lesson => {
+                    listDiv.innerHTML += `<div class="lesson-card" onclick="watchLesson('${lesson.title}', '${lesson.video}')">🎬 ${lesson.title}</div>`;
+                });
+            }
+            switchStep('step4', 'step5');
+        }
+        function watchLesson(title, videoUrl) {
